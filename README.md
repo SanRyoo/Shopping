@@ -4,8 +4,12 @@ An e-commerce application
 
 ## Project Overview
 
-The goal is create app that allows users sign up, log in, add , edit, delete product, order,
-confirm order, confirm shipped, cancel order and chat with others user
+The goal is create app that allows users: 
+- Sign up, log in 
+- Add , edit, delete product
+- Order, confirm order, confirm shipped, cancel order
+- Review Product 
+- Chat with others user
 
 ## Features
 
@@ -61,4 +65,5 @@ confirm order, confirm shipped, cancel order and chat with others user
 <div style="display:flex;">
     <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/master/screenshots/my_purchase.png" style="width:32%;">
     <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/master/screenshots/my_likes.png" style="width:32%;">
+    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/master/screenshots/review.png" style="width:32%;">
 </div>
