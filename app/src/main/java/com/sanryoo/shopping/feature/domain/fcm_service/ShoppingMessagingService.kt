@@ -1,6 +1,5 @@
 package com.sanryoo.shopping.feature.domain.fcm_service
 
-import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
@@ -16,7 +15,6 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.sanryoo.shopping.R
 import com.sanryoo.shopping.feature.presentation.ShoppingActivity
-import com.sanryoo.shopping.feature.util.Screen
 import kotlinx.coroutines.FlowPreview
 import kotlin.random.Random
 
@@ -41,17 +39,17 @@ class ShoppingMessagingService : FirebaseMessagingService() {
         super.onMessageReceived(message)
 
         val intent = Intent(this, ShoppingActivity::class.java)
-        intent.putExtra("route", Screen.Notification.route)
+        intent.putExtra("route", message.data["route"])
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         val notificationId = Random.nextInt()
         val notification = NotificationCompat
             .Builder(this, getString(R.string.notification_chanel_id))
-            .setSmallIcon(R.drawable.logo_shopping)
+            .setSmallIcon(R.drawable.logo_shopping_notification)
             .setContentTitle(message.data["title"])
             .setContentText(message.data["message"])
-            .setColor(getColor(R.color.primary))
             .setContentIntent(pendingIntent)
+            .setColor(getColor(R.color.primary))
             .setAutoCancel(true)
             .build()
 

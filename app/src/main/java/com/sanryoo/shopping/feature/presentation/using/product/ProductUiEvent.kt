@@ -9,6 +9,7 @@ sealed class ProductUiEvent {
     object NavigateToLogIn: ProductUiEvent()
     object NavigateToCart: ProductUiEvent()
     object NavigateToChats: ProductUiEvent()
+    data class NavigateToMessage(val otherId: String): ProductUiEvent()
     data class CheckOut(val orders: List<Order>): ProductUiEvent()
     data class ViewShop(val uid: String): ProductUiEvent()
     data class ViewProduct(val product: Product): ProductUiEvent()

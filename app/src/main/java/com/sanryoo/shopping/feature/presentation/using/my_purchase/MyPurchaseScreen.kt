@@ -70,6 +70,12 @@ fun MyPurchaseScreen(
                     val encodeJson = Uri.encode(ordersJson)
                     navController.navigate(Screen.CheckOut.route + "?orders=$encodeJson")
                 }
+
+                is MyPurchaseUiEvent.Review -> {
+                    val orderJson = Gson().toJson(event.order)
+                    val encodeJson = Uri.encode(orderJson)
+                    navController.navigate(Screen.Review.route + "?order=$encodeJson")
+                }
             }
         }
     }
@@ -81,6 +87,7 @@ fun MyPurchaseScreen(
         onBack = { viewModel.onUiEvent(MyPurchaseUiEvent.BackToPrevScreen) },
         onViewProduct = { viewModel.onUiEvent(MyPurchaseUiEvent.ViewProduct(it)) },
         onBuyAgain = { viewModel.onUiEvent(MyPurchaseUiEvent.CheckOut(listOf(it.copy(oid = "")))) },
+        onReview = { viewModel.onUiEvent(MyPurchaseUiEvent.Review(it)) }
     )
 }
 
@@ -88,10 +95,11 @@ fun MyPurchaseScreen(
 private fun MyPurchaseContent(
     state: MyPurchaseState = MyPurchaseState(),
     setTab: (Int) -> Unit = {},
-    onCancelOrder: (Order) -> Unit = {},
-    onBack: () -> Unit = {},
     onViewProduct: (Product) -> Unit = {},
+    onCancelOrder: (Order) -> Unit = {},
     onBuyAgain: (Order) -> Unit = {},
+    onReview: (Order) -> Unit = {},
+    onBack: () -> Unit = {},
 ) {
     Scaffold(
         topBar = {
@@ -182,15 +190,41 @@ private fun MyPurchaseContent(
             content = { tabIndex ->
                 when (tabIndex) {
                     //All
-                    0 -> MyPurchaseTag(state.allOrders, onViewProduct, onCancelOrder, onBuyAgain)
+                    0 -> MyPurchaseTag(
+                        orders = state.allOrders,
+                        onViewProduct = onViewProduct,
+                        onCancel = onCancelOrder,
+                        onBuyAgain = onBuyAgain,
+                        onReview = onReview
+                    )
 
                     //Ordered, Shipping
-                    1 -> MyPurchaseTag(state.orderedOrders, onViewProduct, onCancelOrder)
-                    2 -> MyPurchaseTag(state.shippingOrders, onViewProduct, onCancelOrder)
+                    1 -> MyPurchaseTag(
+                        orders = state.orderedOrders,
+                        onViewProduct = onViewProduct,
+                        onCancel = onCancelOrder
+                    )
+                    2 -> MyPurchaseTag(
+                        orders = state.shippingOrders,
+                        onViewProduct = onViewProduct,
+                        onCancel = onCancelOrder
+                    )
 
-                    //Shipped, Cancelled
-                    3 -> MyPurchaseTag(state.shippedOrders, onViewProduct, {}, onBuyAgain)
-                    4 -> MyPurchaseTag(state.cancelledOrders, onViewProduct, {}, onBuyAgain)
+                    //Shipped
+                    3 -> MyPurchaseTag(
+                        orders = state.shippedOrders,
+                        onViewProduct = onViewProduct,
+                        onBuyAgain = onBuyAgain,
+                        onReview = onReview
+                    )
+
+                    //Cancelled
+                    4 -> MyPurchaseTag(
+                        orders = state.allOrders,
+                        onViewProduct = onViewProduct,
+                        onCancel = onCancelOrder,
+                        onBuyAgain = onBuyAgain,
+                    )
                 }
             }
         )

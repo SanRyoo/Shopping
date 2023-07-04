@@ -1,6 +1,5 @@
 package com.sanryoo.shopping.feature.presentation.using.notifications.component
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -19,13 +18,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.sanryoo.shopping.feature.domain.model.notification.Notification
-import java.text.SimpleDateFormat
-import java.time.LocalTime
-import java.util.Calendar
-import java.util.Date
+import com.sanryoo.shopping.feature.util.dateFormat
 import java.util.concurrent.TimeUnit
 
-@SuppressLint("SimpleDateFormat")
 @Composable
 fun ItemNotifications(
     modifier: Modifier = Modifier,
@@ -34,7 +29,7 @@ fun ItemNotifications(
 ) {
     Row(
         modifier = modifier
-            .background(if (notification.read) Color.White else Color(0xFF87DDFC))
+            .background(if (notification.read) Color.White else Color(0xFFAFEAFF))
             .clickable { onClick(notification) }
     ) {
         AsyncImage(
@@ -65,7 +60,6 @@ fun ItemNotifications(
             Spacer(modifier = Modifier.height(5.dp))
             notification.date?.let { date ->
                 val time = TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - date.time)
-                val dateFormat = SimpleDateFormat("HH:mm dd/MM/yyyy")
                 Text(
                     text = when {
                         time < 60 -> "$time minutes ago"

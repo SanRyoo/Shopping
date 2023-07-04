@@ -2,6 +2,7 @@ package com.sanryoo.shopping.feature.presentation.using.product
 
 import android.app.Application
 import android.net.Uri
+import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.Filter
@@ -29,8 +30,7 @@ import kotlin.random.Random
 
 @HiltViewModel
 class ProductViewModel @Inject constructor(
-    private val auth: FirebaseAuth,
-    private val appContext: Application
+    private val auth: FirebaseAuth
 ) : BaseViewModel<ProductState, ProductUiEvent>(ProductState()) {
 
     private val usersCollectionRef = Firebase.firestore.collection("users")
@@ -150,12 +150,8 @@ class ProductViewModel @Inject constructor(
         }
     }
 
-    fun onCommentChange(value: String) {
-        _state.update { it.copy(comment = value) }
-    }
-
-    fun onListImageCommentChange(listImages: List<Uri>) {
-        _state.update { it.copy(listImagesComment = listImages) }
+    fun setFirstItemOffset(offset: Offset) {
+        _state.update { it.copy(firstItemOffset = offset) }
     }
 
     fun setSheetContent(sheetContent: SheetContent) {
@@ -193,53 +189,6 @@ class ProductViewModel @Inject constructor(
             onUiEvent(ProductUiEvent.SetShowBottomSheet(true))
         } else {
             onUiEvent(ProductUiEvent.NavigateToLogIn)
-        }
-    }
-
-    fun onSendReview() {
-        onUiEvent(ProductUiEvent.ClearFocus)
-        val productsRef =
-            Firebase.storage.reference.child("products/${state.value.product.pid}/images-review")
-        var tempListImage = emptyList<String>()
-
-        if (state.value.comment.length < 10) {
-            onUiEvent(ProductUiEvent.ShowSnackBar("Comment have to longer than 10 character"))
-            return
-        }
-
-        if (state.value.listImagesComment.isEmpty()) {
-            onUiEvent(ProductUiEvent.ShowSnackBar("Review must have at least one image"))
-            return
-        }
-
-        if (state.value.listImagesComment.isNotEmpty()) {
-            viewModelScope.launch {
-                state.value.listImagesComment.forEach { uri ->
-                    val fileExtension = getFileExtension(uri, appContext.contentResolver)
-                    val randomFileName =
-                        "${UUID.randomUUID()}-${System.currentTimeMillis()}.$fileExtension"
-                    val productImageRef = productsRef.child(randomFileName)
-                    val taskSnapshot = productImageRef.putFile(uri).await()
-
-                    val task = taskSnapshot.task
-                    if (task.isComplete) {
-                        val url = productImageRef.downloadUrl.await()
-                        val path = url?.toString() ?: ""
-                        tempListImage = tempListImage + path
-                    }
-                }
-                val review = Review(
-                    user = state.value.user,
-                    time = Date(System.currentTimeMillis()),
-                    rate = Random.nextInt(0, 5),
-                    comment = state.value.comment,
-                    images = tempListImage
-                )
-                val productCollectionRef = Firebase.firestore.collection("products")
-                val productDocument = productCollectionRef.document(state.value.product.pid)
-                productDocument.set(state.value.product.copy(reviews = state.value.product.reviews + review))
-                _state.update { it.copy(comment = "", listImagesComment = emptyList()) }
-            }
         }
     }
 

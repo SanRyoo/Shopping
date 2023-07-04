@@ -2,7 +2,6 @@ package com.sanryoo.shopping.feature.presentation.using.my_purchase
 
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
@@ -10,7 +9,6 @@ import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import com.sanryoo.shopping.feature.domain.model.Order
 import com.sanryoo.shopping.feature.presentation._base_component.BaseViewModel
-import com.sanryoo.shopping.feature.util.OrderStatus.ADDED_TO_CART
 import com.sanryoo.shopping.feature.util.OrderStatus.CANCELLED
 import com.sanryoo.shopping.feature.util.OrderStatus.ORDERED
 import com.sanryoo.shopping.feature.util.OrderStatus.SHIPPED

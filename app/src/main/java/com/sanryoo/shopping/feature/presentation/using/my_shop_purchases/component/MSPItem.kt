@@ -1,9 +1,8 @@
-package com.sanryoo.shopping.feature.presentation.using.my_purchase.component
+package com.sanryoo.shopping.feature.presentation.using.my_shop_purchases.component
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,16 +24,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.sanryoo.shopping.feature.domain.model.Order
-import com.sanryoo.shopping.feature.domain.model.Product
 import com.sanryoo.shopping.feature.domain.model.getTotalCost
 import com.sanryoo.shopping.feature.presentation.using.cart.component.customToString
-import com.sanryoo.shopping.feature.util.OrderStatus
-import com.sanryoo.shopping.feature.util.OrderStatus.ADDED_TO_CART
 import com.sanryoo.shopping.feature.util.OrderStatus.CANCELLED
 import com.sanryoo.shopping.feature.util.OrderStatus.ORDERED
 import com.sanryoo.shopping.feature.util.OrderStatus.SHIPPED
@@ -42,15 +37,15 @@ import com.sanryoo.shopping.feature.util.OrderStatus.SHIPPING
 import com.sanryoo.shopping.feature.util.decimalFormat
 import com.sanryoo.shopping.ui.theme.Primary
 import java.text.SimpleDateFormat
-import java.util.Date
 
 @SuppressLint("SimpleDateFormat")
 @Composable
-fun MyPurchaseItem(
+fun MyShopPurchaseItem(
     modifier: Modifier = Modifier,
     order: Order = Order(),
-    onViewProduct: () -> Unit = {},
-    onClickButton: () -> Unit = {}
+    onConfirmOrder: (Order) -> Unit = {},
+    onCancelOrder: (Order) -> Unit = {},
+    onConfirmShipped: (Order) -> Unit = {}
 ) {
     val dateFormat = SimpleDateFormat("HH:mm dd/MM/yyyy")
     Column(modifier = modifier.background(Color.White)) {
@@ -60,12 +55,7 @@ fun MyPurchaseItem(
                 contentDescription = "Product's First Image",
                 modifier = Modifier
                     .padding(10.dp)
-                    .size(100.dp)
-                    .clickable(
-                        interactionSource = MutableInteractionSource(),
-                        indication = null,
-                        onClick = onViewProduct
-                    ),
+                    .size(100.dp),
                 contentScale = ContentScale.Crop
             )
             Column(
@@ -79,12 +69,7 @@ fun MyPurchaseItem(
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Medium,
                     overflow = TextOverflow.Ellipsis,
-                    maxLines = 2,
-                    modifier = Modifier.clickable(
-                        interactionSource = MutableInteractionSource(),
-                        indication = null,
-                        onClick = onViewProduct
-                    )
+                    maxLines = 2
                 )
                 Spacer(modifier = Modifier.height(5.dp))
                 Text(text = "Variations: ${order.variations.customToString()}")
@@ -208,15 +193,40 @@ fun MyPurchaseItem(
             )
         }
         Divider(modifier = Modifier.fillMaxWidth())
+        if(order.status == ORDERED || order.status == SHIPPING) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable{
+                        when (order.status) {
+                            ORDERED -> onConfirmOrder(order)
+                            SHIPPING -> onConfirmShipped(order)
+                        }
+                    }
+            ) {
+                Text(
+                    text = when (order.status) {
+                        ORDERED -> "Confirm Order"
+                        SHIPPING -> "Confirm Shipped"
+                        else -> return@Box
+                    },
+                    textAlign = TextAlign.Center,
+                    color = Color.Red,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp)
+                )
+            }
+            Divider(modifier = Modifier.fillMaxWidth())
+        }
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable(onClick = onClickButton)
+                .clickable{ onCancelOrder(order) }
         ) {
             Text(
                 text = when (order.status) {
                     ORDERED, SHIPPING -> "Cancel"
-                    SHIPPED, CANCELLED -> "Buy Again"
                     else -> return@Box
                 },
                 textAlign = TextAlign.Center,

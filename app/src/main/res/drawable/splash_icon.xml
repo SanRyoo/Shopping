@@ -2,9 +2,9 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:drawable="@drawable/logo_shopping"
-        android:width="120dp"
-        android:height="120dp"
+        android:drawable="@drawable/logo_shopping_circle"
+        android:width="110dp"
+        android:height="110dp"
         android:gravity="center"
         />
 

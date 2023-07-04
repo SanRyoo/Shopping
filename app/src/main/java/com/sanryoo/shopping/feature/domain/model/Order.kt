@@ -13,7 +13,9 @@ data class Order(
     var orderedDate: Date? = null,
     var confirmedDate: Date? = null,
     var shippedDate: Date? = null,
-    var cancelledDate: Date? = null
+    var cancelledDate: Date? = null,
+
+    var reviewed: Boolean = false
 )
 
 fun Order.getTotalCost(): Long {

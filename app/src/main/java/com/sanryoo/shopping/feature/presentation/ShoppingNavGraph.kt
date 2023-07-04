@@ -20,16 +20,20 @@ import com.sanryoo.shopping.feature.presentation.authentication.login.LogInScree
 import com.sanryoo.shopping.feature.presentation.authentication.signup.SignUpScreen
 import com.sanryoo.shopping.feature.presentation.using.cart.CartScreen
 import com.sanryoo.shopping.feature.presentation.using.change_password.ChangePasswordScreen
+import com.sanryoo.shopping.feature.presentation.using.chats.ChatsScreen
 import com.sanryoo.shopping.feature.presentation.using.checkout.CheckOutScreen
 import com.sanryoo.shopping.feature.presentation.using.edit_product.EditProductScreen
 import com.sanryoo.shopping.feature.presentation.using.home.HomeScreen
+import com.sanryoo.shopping.feature.presentation.using.message.MessageScreen
 import com.sanryoo.shopping.feature.presentation.using.my_account.UserScreen
 import com.sanryoo.shopping.feature.presentation.using.my_likes.MyLikesScreen
 import com.sanryoo.shopping.feature.presentation.using.my_purchase.MyPurchaseScreen
 import com.sanryoo.shopping.feature.presentation.using.my_shop.MyShopScreen
+import com.sanryoo.shopping.feature.presentation.using.my_shop_purchases.MyShopPurchaseScreen
 import com.sanryoo.shopping.feature.presentation.using.notifications.NotificationScreen
 import com.sanryoo.shopping.feature.presentation.using.product.ProductScreen
 import com.sanryoo.shopping.feature.presentation.using.profile.ProfileScreen
+import com.sanryoo.shopping.feature.presentation.using.review.ReviewScreen
 import com.sanryoo.shopping.feature.presentation.using.shop.ShopScreen
 import com.sanryoo.shopping.feature.util.Screen
 import kotlinx.coroutines.FlowPreview
@@ -42,14 +46,12 @@ import kotlinx.coroutines.FlowPreview
 @ExperimentalMaterialApi
 @Composable
 fun ShoppingNavGraph(
-    startDestination: String,
     navController: NavHostController,
-    scaffoldState: ScaffoldState,
+    scaffoldState: ScaffoldState
 ) {
-
     NavHost(
         navController = navController,
-        startDestination = startDestination
+        startDestination = Screen.Home.route
     ) {
         //Using
         composable(route = Screen.Home.route) {
@@ -74,6 +76,10 @@ fun ShoppingNavGraph(
 
         composable(route = Screen.MyShop.route) {
             MyShopScreen(navController, scaffoldState)
+        }
+
+        composable(route = Screen.MyShopPurchases.route) {
+            MyShopPurchaseScreen(navController)
         }
 
         composable(route = Screen.MyLikes.route) {
@@ -127,7 +133,17 @@ fun ShoppingNavGraph(
         }
 
         composable(route = Screen.Chats.route) {
+            ChatsScreen(navController)
+        }
 
+        composable(
+            route = Screen.Message.route + "?othersId={othersId}",
+            arguments = listOf(
+                navArgument("othersId") { type = NavType.StringType }
+            )
+        ) {
+            val othersId = it.arguments?.getString("othersId") ?: ""
+            MessageScreen(othersId, navController)
         }
 
         composable(
@@ -146,6 +162,19 @@ fun ShoppingNavGraph(
 
         composable(route = Screen.MyPurchase.route) {
             MyPurchaseScreen(navController)
+        }
+
+        composable(
+            route = Screen.Review.route + "?order={order}",
+            arguments = listOf(navArgument("order") { type = NavType.StringType })
+        ) {
+            val orderJson = it.arguments?.getString("order") ?: ""
+            val order = try {
+                Gson().fromJson(orderJson, Order::class.java) ?: Order()
+            } catch (e: Exception) {
+                Order()
+            }
+            ReviewScreen(order, navController, scaffoldState)
         }
 
         //Authentication

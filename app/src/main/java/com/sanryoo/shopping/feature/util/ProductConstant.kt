@@ -13,5 +13,6 @@ object ProductConstant {
     const val MIN_PRICE = 1000
 
     const val MAX_IMAGES_REVIEW = 5
+    const val MAX_COMMENT = 2000
 
 }

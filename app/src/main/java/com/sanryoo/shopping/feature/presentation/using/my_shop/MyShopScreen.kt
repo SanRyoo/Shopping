@@ -6,8 +6,10 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,6 +28,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -49,6 +52,7 @@ import com.sanryoo.shopping.R
 import com.sanryoo.shopping.feature.domain.model.Product
 import com.sanryoo.shopping.feature.presentation._component.shimmerEffect
 import com.sanryoo.shopping.feature.presentation._component.ItemProduct
+import com.sanryoo.shopping.feature.presentation.using.profile.ProfileUiEvent
 import com.sanryoo.shopping.feature.util.Screen
 import com.sanryoo.shopping.ui.theme.Primary
 import kotlinx.coroutines.flow.collectLatest
@@ -63,6 +67,10 @@ fun MyShopScreen(
     LaunchedEffect(Unit) {
         viewModel.event.collectLatest { event ->
             when (event) {
+                is MyShopUiEvent.ShowSnackBar -> {
+                    scaffoldState.snackbarHostState.showSnackbar(event.message)
+                }
+
                 is MyShopUiEvent.BackToProfile -> {
                     navController.popBackStack()
                 }
@@ -88,8 +96,8 @@ fun MyShopScreen(
                     )
                 }
 
-                is MyShopUiEvent.ShowSnackBar -> {
-                    scaffoldState.snackbarHostState.showSnackbar(event.message)
+                is MyShopUiEvent.NavigateToMyShopPurchases -> {
+                    navController.navigate(Screen.MyShopPurchases.route)
                 }
             }
         }
@@ -100,6 +108,7 @@ fun MyShopScreen(
         onDeleteProduct = viewModel::deleteProduct,
         editProduct = { viewModel.onUiEvent(MyShopUiEvent.EditProduct(it)) },
         onAddProduct = { viewModel.onUiEvent(MyShopUiEvent.AddProduct) },
+        onClickMyShopPurchases = {viewModel.onUiEvent(MyShopUiEvent.NavigateToMyShopPurchases)},
         onBack = { viewModel.onUiEvent(MyShopUiEvent.BackToProfile) },
     )
 }
@@ -111,13 +120,44 @@ private fun MyShopContent(
     onDeleteProduct: (Product) -> Unit = {},
     editProduct: (Product) -> Unit = {},
     onAddProduct: () -> Unit = {},
+    onClickMyShopPurchases: () -> Unit = {},
     onBack: () -> Unit = {},
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
+    Scaffold(
+        bottomBar = {
+            Row(
+                modifier = Modifier
+                    .navigationBarsPadding()
+                    .fillMaxWidth()
+                    .background(Color(0xFFFCD191))
+                    .height(55.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f)
+                        .clickable(onClick = onClickMyShopPurchases),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = "My Shop's Purchase")
+                }
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f)
+                        .background(Primary)
+                        .clickable(onClick = onAddProduct),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = "Add New Product", color = Color.White)
+                }
+            }
+        }
+    ) {
         LazyVerticalGrid(
             modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
+                .navigationBarsPadding()
+                .padding(bottom = 55.dp),
             columns = GridCells.Fixed(2),
             content = {
                 item(span = { GridItemSpan(2) }) {
@@ -198,7 +238,9 @@ private fun MyShopContent(
                     Surface(
                         elevation = 4.dp,
                         color = Color.White,
-                        modifier = Modifier.fillMaxWidth().padding(5.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(5.dp)
                     ) {
                         Column(modifier = Modifier.fillMaxWidth()) {
                             ItemProduct(
@@ -238,24 +280,10 @@ private fun MyShopContent(
                         }
                     }
                 }
+                item {
+                    Spacer(modifier = Modifier.height(10.dp))
+                }
             }
         )
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth(),
-            elevation = 10.dp,
-            color = MaterialTheme.colors.background
-        ) {
-            Button(
-                onClick = onAddProduct,
-                shape = RoundedCornerShape(4.dp),
-                modifier = Modifier
-                    .navigationBarsPadding()
-                    .padding(10.dp)
-                    .fillMaxWidth()
-            ) {
-                Text(text = "Add new product")
-            }
-        }
     }
 }

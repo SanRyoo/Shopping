@@ -89,7 +89,7 @@ fun ChooseImages(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().background(Color.White)
     ) {
         Row(
             modifier = Modifier
@@ -136,8 +136,7 @@ fun ChooseImages(
         LazyVerticalGrid(columns = GridCells.Fixed(3),
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f)
-                .background(MaterialTheme.colors.background),
+                .weight(1f),
             contentPadding = PaddingValues(3.dp),
             horizontalArrangement = Arrangement.spacedBy(3.dp),
             verticalArrangement = Arrangement.spacedBy(3.dp),

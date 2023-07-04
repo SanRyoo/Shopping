@@ -58,13 +58,17 @@ import com.sanryoo.shopping.R
 import com.sanryoo.shopping.feature.domain.model.Product
 import com.sanryoo.shopping.feature.domain.model.Stock
 import com.sanryoo.shopping.feature.domain.model.Variation
-import com.sanryoo.shopping.feature.presentation.using.edit_product.SheetContent.*
+import com.sanryoo.shopping.feature.presentation._component.bottomsheet.ChooseImages
+import com.sanryoo.shopping.feature.presentation.using.edit_product.SheetContent.CATEGORY
+import com.sanryoo.shopping.feature.presentation.using.edit_product.SheetContent.DEFAULT
+import com.sanryoo.shopping.feature.presentation.using.edit_product.SheetContent.IMAGES
+import com.sanryoo.shopping.feature.presentation.using.edit_product.SheetContent.STOCK
+import com.sanryoo.shopping.feature.presentation.using.edit_product.SheetContent.VARIATIONS
 import com.sanryoo.shopping.feature.presentation.using.edit_product.component.CustomTextField
 import com.sanryoo.shopping.feature.presentation.using.edit_product.component.ItemEditProduct
 import com.sanryoo.shopping.feature.presentation.using.edit_product.component.ItemProductPrice
 import com.sanryoo.shopping.feature.presentation.using.edit_product.component.ProductImages
 import com.sanryoo.shopping.feature.presentation.using.edit_product.component.bottomsheet.Category
-import com.sanryoo.shopping.feature.presentation._component.bottomsheet.ChooseImages
 import com.sanryoo.shopping.feature.presentation.using.edit_product.component.bottomsheet.Stock
 import com.sanryoo.shopping.feature.presentation.using.edit_product.component.bottomsheet.Variation
 import com.sanryoo.shopping.feature.util.ProductConstant
@@ -89,7 +93,8 @@ fun EditProductScreen(
     val sheetState = rememberModalBottomSheetState(
         initialValue = Hidden,
         animationSpec = tween(500),
-        confirmStateChange = { it != HalfExpanded })
+        confirmStateChange = { it != HalfExpanded }
+    )
     LaunchedEffect(Unit) {
         viewModel.setInitProduct(product)
     }
@@ -279,7 +284,7 @@ private fun EditProductContent(
                                 .padding(15.dp)
                                 .size(25.dp)
                         )
-                        Text(text = "Image(${state.images.size}/9): ")
+                        Text(text = "Image(${state.images.size + state.product.images.size}/9): ")
                     }
                     ProductImages(
                         modifier = Modifier.fillMaxWidth(),
@@ -308,7 +313,7 @@ private fun EditProductContent(
                         value = state.product.description,
                         onValueChange = onChangeDescription,
                         maxLength = ProductConstant.MAX_DESCRIPTION,
-                        imeAction = ImeAction.Next
+                        imeAction = ImeAction.Default
                     )
                     Spacer(modifier = Modifier.height(10.dp))
                     ItemEditProduct(

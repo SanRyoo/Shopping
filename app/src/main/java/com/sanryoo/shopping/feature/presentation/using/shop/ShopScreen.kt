@@ -47,8 +47,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.sanryoo.shopping.R
 import com.sanryoo.shopping.feature.domain.model.Product
@@ -88,6 +86,10 @@ fun ShopScreen(
                     navController.navigate(Screen.Chats.route)
                 }
 
+                is ShopUiEvent.NavigateToMessage -> {
+                    navController.navigate(Screen.Message.route + "?othersId=${event.otherId}")
+                }
+
                 is ShopUiEvent.ViewProduct -> {
                     val productJson = Gson().toJson(event.product)
                     val encodedJson = Uri.encode(productJson)
@@ -103,8 +105,9 @@ fun ShopScreen(
         unlikeShop = viewModel::unlikeShop,
         onClickCart = viewModel::onClickCart,
         onClickChats = viewModel::onClickChats,
+        onClickChatWithShop = {viewModel.onUiEvent(ShopUiEvent.NavigateToMessage(it))},
         onBack = { viewModel.onUiEvent(ShopUiEvent.BackToPrevScreen) },
-        viewProduct = { viewModel.onUiEvent(ShopUiEvent.ViewProduct(it)) },
+        viewProduct = { viewModel.onUiEvent(ShopUiEvent.ViewProduct(it)) }
     )
 }
 
@@ -115,6 +118,7 @@ private fun ShopContent(
     likeShop: () -> Unit = {},
     onClickCart: () -> Unit = {},
     onClickChats: () -> Unit = {},
+    onClickChatWithShop: (String) -> Unit = {},
     unlikeShop: () -> Unit = {},
     viewProduct: (Product) -> Unit = {},
     onBack: () -> Unit = {}
@@ -184,7 +188,23 @@ private fun ShopContent(
                             if (state.user.uid != state.shop.uid) {
                                 Box(
                                     modifier = Modifier
-                                        .padding(horizontal = 10.dp)
+                                        .padding(end = 5.dp)
+                                        .clip(RoundedCornerShape(5.dp))
+                                        .background(Primary)
+                                        .clickable { onClickChatWithShop(state.shop.uid) }
+                                ) {
+                                    Text(
+                                        text = "Chat",
+                                        color = Color.White,
+                                        modifier = Modifier.padding(
+                                            horizontal = 20.dp,
+                                            vertical = 5.dp
+                                        )
+                                    )
+                                }
+                                Box(
+                                    modifier = Modifier
+                                        .padding(end = 5.dp)
                                         .clip(RoundedCornerShape(5.dp))
                                         .background(if (state.liked) Primary else Color.White)
                                         .border(1.dp, Primary, RoundedCornerShape(5.dp))
@@ -199,7 +219,7 @@ private fun ShopContent(
                                         text = if (state.liked) "Liked" else " Like ",
                                         color = if (state.liked) Color.White else Primary,
                                         modifier = Modifier.padding(
-                                            horizontal = 25.dp,
+                                            horizontal = 20.dp,
                                             vertical = 5.dp
                                         )
                                     )

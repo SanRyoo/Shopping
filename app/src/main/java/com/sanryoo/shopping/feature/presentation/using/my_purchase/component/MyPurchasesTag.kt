@@ -16,7 +16,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.sanryoo.shopping.feature.domain.model.Order
 import com.sanryoo.shopping.feature.domain.model.Product
-import com.sanryoo.shopping.feature.util.OrderStatus
 import com.sanryoo.shopping.feature.util.OrderStatus.CANCELLED
 import com.sanryoo.shopping.feature.util.OrderStatus.ORDERED
 import com.sanryoo.shopping.feature.util.OrderStatus.SHIPPED
@@ -27,7 +26,8 @@ fun MyPurchaseTag(
     orders: List<Order> = emptyList(),
     onViewProduct: (Product) -> Unit = {},
     onCancel: (Order) -> Unit = {},
-    onBuyAgain: (Order) -> Unit = {}
+    onBuyAgain: (Order) -> Unit = {},
+    onReview: (Order) -> Unit = {}
 ) {
     LazyColumn {
         if (orders.isEmpty()) {
@@ -45,13 +45,10 @@ fun MyPurchaseTag(
             MyPurchaseItem(
                 modifier = Modifier.fillMaxWidth(),
                 order = order,
-                onViewProduct = { onViewProduct(order.product) },
-                onClickButton = {
-                    when (order.status) {
-                        ORDERED, SHIPPING -> { onCancel(order) }
-                        SHIPPED, CANCELLED -> { onBuyAgain(order) }
-                    }
-                }
+                onViewProduct = onViewProduct,
+                onCancel = onCancel,
+                onBuyAgain = onBuyAgain,
+                onReview = onReview
             )
             if (index != orders.size - 1) {
                 Spacer(

@@ -1,7 +1,6 @@
 package com.sanryoo.shopping.feature.presentation.using.product
 
 import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -50,11 +49,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -66,7 +61,6 @@ import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -80,12 +74,11 @@ import com.sanryoo.shopping.R
 import com.sanryoo.shopping.feature.domain.model.Order
 import com.sanryoo.shopping.feature.domain.model.Product
 import com.sanryoo.shopping.feature.domain.model.getAvgRate
+import com.sanryoo.shopping.feature.domain.model.getSold
 import com.sanryoo.shopping.feature.presentation._component.ItemProduct
-import com.sanryoo.shopping.feature.presentation._component.readImagePermission
 import com.sanryoo.shopping.feature.presentation._component.shimmerEffect
 import com.sanryoo.shopping.feature.presentation.using.product.SheetContent.ADD_TO_CART
 import com.sanryoo.shopping.feature.presentation.using.product.SheetContent.BUY_NOW
-import com.sanryoo.shopping.feature.presentation.using.product.SheetContent.CHOOSE_IMAGES
 import com.sanryoo.shopping.feature.presentation.using.product.SheetContent.DEFAULT
 import com.sanryoo.shopping.feature.presentation.using.product.component.ProductBottomBar
 import com.sanryoo.shopping.feature.presentation.using.product.component.ProductTopBar
@@ -140,6 +133,10 @@ fun ProductScreen(
                     navController.navigate(Screen.Chats.route)
                 }
 
+                is ProductUiEvent.NavigateToMessage -> {
+                    navController.navigate(Screen.Message.route + "?othersId=${event.otherId}")
+                }
+
                 is ProductUiEvent.CheckOut -> {
                     val ordersJson = Gson().toJson(event.orders)
                     val encodeJson = Uri.encode(ordersJson)
@@ -170,16 +167,15 @@ fun ProductScreen(
     ProductContent(
         sheetState = sheetState,
         state = state,
-        onCommentChange = viewModel::onCommentChange,
-        onListImageCommentChange = viewModel::onListImageCommentChange,
-        onSendReview = viewModel::onSendReview,
+        setFirstItemOffset = viewModel::setFirstItemOffset,
         setSheetContent = viewModel::setSheetContent,
         onClickAddToCart = viewModel::onClickAddToCart,
         onClickBuyNow = viewModel::onClickBuyNow,
         onClickCart = viewModel::onClickCart,
-        onClickChats = viewModel::onClickChats,
+        onClickChatIcon = viewModel::onClickChats,
         onAddToCartChange = viewModel::onAddToCartChange,
         addToCart = viewModel::onAddToCart,
+        onClickChatWithShop = {viewModel.onUiEvent(ProductUiEvent.NavigateToMessage(it))},
         checkOut = { viewModel.onUiEvent(ProductUiEvent.CheckOut(it)) },
         setShowBottomSheet = { viewModel.onUiEvent(ProductUiEvent.SetShowBottomSheet(it)) },
         viewShop = { viewModel.onUiEvent(ProductUiEvent.ViewShop(state.product.user.uid)) },
@@ -195,12 +191,11 @@ fun ProductScreen(
 private fun ProductContent(
     sheetState: ModalBottomSheetState,
     state: ProductState = ProductState(),
-    onCommentChange: (String) -> Unit = {},
-    onListImageCommentChange: (List<Uri>) -> Unit = {},
-    onSendReview: () -> Unit = {},
+    setFirstItemOffset: (Offset) -> Unit = {},
     setSheetContent: (SheetContent) -> Unit = {},
     onClickCart: () -> Unit = {},
-    onClickChats: () -> Unit = {},
+    onClickChatIcon: () -> Unit = {},
+    onClickChatWithShop: (String) -> Unit = {},
     onClickAddToCart: () -> Unit = {},
     onClickBuyNow: () -> Unit = {},
     onAddToCartChange: (Order) -> Unit = {},
@@ -213,14 +208,6 @@ private fun ProductContent(
 ) {
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState()
-    var firstItemOffset by remember {
-        mutableStateOf(Offset.Zero)
-    }
-    val readImagePermission = readImagePermission(
-        onPermissionGranted = {
-            setShowBottomSheet(true)
-        }
-    )
     ModalBottomSheetLayout(
         sheetState = sheetState,
         sheetBackgroundColor = MaterialTheme.colors.background,
@@ -229,15 +216,6 @@ private fun ProductContent(
             when (state.sheetContent) {
                 DEFAULT -> {
                     Box(modifier = Modifier.fillMaxSize())
-                }
-
-                CHOOSE_IMAGES -> {
-//                    ChooseImages(
-//                        maxImages = ProductConstant.MAX_IMAGES_REVIEW,
-//                        hideBottomSheet = { setShowBottomSheet(false) },
-//                        currentImages = state.listImagesComment,
-//                        onChangeImages = onListImageCommentChange
-//                    )
                 }
 
                 ADD_TO_CART -> {
@@ -270,7 +248,10 @@ private fun ProductContent(
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             LazyVerticalGrid(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .then(if (state.user.uid != state.product.user.uid) Modifier.navigationBarsPadding() else Modifier)
+                    .padding(bottom = if (state.user.uid != state.product.user.uid) 55.dp else 0.dp),
                 columns = GridCells.Fixed(2),
                 content = {
                     item(span = { GridItemSpan(2) }) {
@@ -280,7 +261,7 @@ private fun ProductContent(
                                 .height(300.dp)
                                 .onGloballyPositioned { coordinates ->
                                     val offset = coordinates.positionInWindow()
-                                    firstItemOffset = offset
+                                    setFirstItemOffset(offset)
                                 }
                         ) {
                             HorizontalPager(
@@ -378,7 +359,7 @@ private fun ProductContent(
                                 modifier = Modifier.padding(5.dp)
                             )
                             Text(
-                                text = "${state.product.sold} sold",
+                                text = "${state.product.getSold()} sold",
                                 modifier = Modifier.padding(5.dp)
                             )
                         }
@@ -598,60 +579,55 @@ private fun ProductContent(
                             )
                             Divider(modifier = Modifier.fillMaxWidth())
                             Text(
-                                text = "Review: ",
+                                text = "Review: ${if (state.product.reviews.isEmpty()) "No Review" else state.product.reviews.size.toString()}",
                                 modifier = Modifier.padding(horizontal = 15.dp, vertical = 10.dp),
                             )
-                            if (state.product.reviews.isEmpty()) {
-                                Text(
-                                    text = "No Review",
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 15.dp, vertical = 10.dp),
-                                    textAlign = TextAlign.Center
+                            state.product.reviews.forEach { review ->
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    AsyncImage(
+                                        model = review.user.profilePicture,
+                                        contentDescription = "User's profile picture",
+                                        modifier = Modifier
+                                            .padding(10.dp)
+                                            .padding(start = 5.dp)
+                                            .clip(CircleShape)
+                                            .size(45.dp),
+                                        contentScale = ContentScale.Crop
+                                    )
+                                    Text(
+                                        text = review.user.name,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                }
+                                RatingBar(
+                                    modifier = Modifier.padding(start = 65.dp),
+                                    rating = review.rate.toFloat(),
+                                    spaceBetween = 2.dp
                                 )
-                            } else {
-                                state.product.reviews.forEach { review ->
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
+                                Text(
+                                    text = review.comment,
+                                    modifier = Modifier.padding(start = 65.dp)
+                                )
+                                LazyRow(
+                                    modifier = Modifier
+                                        .padding(start = 55.dp)
+                                        .fillMaxWidth()
+                                        .height(100.dp),
+                                    contentPadding = PaddingValues(10.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                ) {
+                                    items(review.images) { photoUrl ->
                                         AsyncImage(
-                                            model = review.user.profilePicture,
-                                            contentDescription = "User's profile picture",
+                                            model = photoUrl,
+                                            contentDescription = "Image review product",
                                             modifier = Modifier
-                                                .padding(10.dp)
-                                                .padding(start = 5.dp)
-                                                .clip(CircleShape)
-                                                .size(45.dp),
+                                                .fillMaxWidth()
+                                                .aspectRatio(1f),
                                             contentScale = ContentScale.Crop
                                         )
-                                        Text(
-                                            text = review.user.name,
-                                            fontWeight = FontWeight.Medium
-                                        )
-                                    }
-                                    Text(
-                                        text = review.comment,
-                                        modifier = Modifier.padding(start = 65.dp)
-                                    )
-                                    LazyRow(
-                                        modifier = Modifier
-                                            .padding(start = 55.dp)
-                                            .fillMaxWidth()
-                                            .height(100.dp),
-                                        contentPadding = PaddingValues(10.dp),
-                                        horizontalArrangement = Arrangement.spacedBy(10.dp),
-                                    ) {
-                                        items(review.images) { photoUrl ->
-                                            AsyncImage(
-                                                model = photoUrl,
-                                                contentDescription = "Image review product",
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .aspectRatio(1f),
-                                                contentScale = ContentScale.Crop
-                                            )
-                                        }
                                     }
                                 }
                             }
@@ -676,13 +652,10 @@ private fun ProductContent(
                             }
                         )
                     }
-                    item(span = { GridItemSpan(2) }) {
-                        Box(
-                            modifier = Modifier
-                                .navigationBarsPadding()
-                                .fillMaxWidth()
-                                .height(if (state.user.uid != state.product.user.uid) 55.dp else 0.dp)
-                        )
+                    if (state.user.uid == state.product.user.uid) {
+                        item(span = { GridItemSpan(2) }) {
+                            Spacer(modifier = Modifier.navigationBarsPadding())
+                        }
                     }
                 }
             )
@@ -690,19 +663,19 @@ private fun ProductContent(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .fillMaxWidth(),
-                firstItemOffset = firstItemOffset,
+                firstItemOffset = state.firstItemOffset,
                 numberOfCart = state.numberOfCart,
                 numberOfChats = state.numberOfChats,
                 onBack = onBack,
                 onClickCart = onClickCart,
-                onClickChats = onClickChats
+                onClickChats = onClickChatIcon
             )
             if (state.user.uid != state.product.user.uid) {
                 ProductBottomBar(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .fillMaxWidth(),
-                    onClickChats = onClickChats,
+                    onClickChats = { onClickChatWithShop(state.product.user.uid) },
                     onClickAddToCart = onClickAddToCart,
                     onClickBuyNow = onClickBuyNow
                 )

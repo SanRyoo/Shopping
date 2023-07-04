@@ -88,7 +88,7 @@ class CheckOutViewModel @Inject constructor(
                         date = Date(System.currentTimeMillis()),
                         seen = false,
                         read = false,
-                        route = Screen.MyShop.route
+                        route = Screen.MyShopPurchases.route
                     )
                     notificationDocumentRef.set(notification).await()
 
@@ -96,7 +96,8 @@ class CheckOutViewModel @Inject constructor(
                         val postNotification = PushNotification(
                             data = Notification(
                                 title = notification.title,
-                                message = notification.message
+                                message = notification.message,
+                                route = Screen.Notification.route
                             ),
                             to = token
                         )

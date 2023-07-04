@@ -18,18 +18,18 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.core.app.ActivityCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import com.sanryoo.shopping.feature.presentation._component.CustomBottomNavigation
 import com.sanryoo.shopping.feature.presentation._component.SnackBar
 import com.sanryoo.shopping.feature.util.Screen
 import com.sanryoo.shopping.ui.theme.ShoppingTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.drop
 
 @FlowPreview
 @ExperimentalPermissionsApi
@@ -50,13 +50,24 @@ class ShoppingActivity : ComponentActivity() {
         installSplashScreen()
         requestNotificationPermission()
 
-        val startDestination = intent.getStringExtra("route") ?: Screen.Home.route
+        val receivedRoute = intent.getStringExtra("route") ?: Screen.Home.route
+        viewModel.setRoute(receivedRoute)
 
         setContent {
             ShoppingTheme {
                 val numberOfNotifications = viewModel.numberOfNotifications.collectAsStateWithLifecycle().value
+                val route = viewModel.route.collectAsStateWithLifecycle().value
+
                 val navController = rememberNavController()
                 val scaffoldState = rememberScaffoldState()
+
+                LaunchedEffect(route) {
+                    if (route != Screen.Home.route) {
+                        delay(300)
+                        navController.navigate(route)
+                    }
+                }
+
                 Scaffold(
                     scaffoldState = scaffoldState,
                     snackbarHost = { hostState ->
@@ -68,7 +79,7 @@ class ShoppingActivity : ComponentActivity() {
                         CustomBottomNavigation(navController, numberOfNotifications)
                     }
                 ) {
-                    ShoppingNavGraph(startDestination ,navController, scaffoldState)
+                    ShoppingNavGraph(navController, scaffoldState)
                 }
             }
         }

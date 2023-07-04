@@ -6,6 +6,7 @@ import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.sanryoo.shopping.feature.util.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,6 +20,9 @@ class ShoppingViewModel @Inject constructor(
 
     private val _numberOfNotifications = MutableStateFlow(0)
     val numberOfNotifications = _numberOfNotifications.asStateFlow()
+
+    private val _route = MutableStateFlow(Screen.Home.route)
+    val route = _route.asStateFlow()
 
     private val notificationsCollectionRef = Firebase.firestore.collection("notifications")
 
@@ -55,5 +59,9 @@ class ShoppingViewModel @Inject constructor(
                     }
             }
         }
+    }
+
+    fun setRoute(route: String) {
+        _route.update { route }
     }
 }

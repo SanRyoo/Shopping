@@ -7,4 +7,5 @@ sealed class MyPurchaseUiEvent {
     object BackToPrevScreen: MyPurchaseUiEvent()
     data class ViewProduct(val product: Product): MyPurchaseUiEvent()
     data class CheckOut(val orders: List<Order>): MyPurchaseUiEvent()
+    data class Review(val order: Order): MyPurchaseUiEvent()
 }
