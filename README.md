@@ -5,8 +5,11 @@ An e-commerce application
 ## Project Overview
 
 The goal is create app that allows users: 
-- Sign up, log in 
-- Add , edit, delete product
+- Sign up, log in
+- Change information user, change password(for account register by email)
+- Like, unlike shop
+- Add, edit, delete product
+- Add, edit, delete order in cart
 - Order, confirm order, confirm shipped, cancel order
 - Review Product 
 - Chat with others user
