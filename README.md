@@ -23,42 +23,42 @@ confirm order, confirm shipped, cancel order and chat with others user
 ### Bottom navigation
 
 <div style="display:flex;">
-    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/screenshots/master/home.png" style="width:32%;">
-    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/screenshots/master/notifications.png" style="width:32%;">
-    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/screenshots/master/profile.png" style="width:32%;"> 
+    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/master/screenshots/home.png" style="width:32%;">
+    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/master/screenshots/notifications.png" style="width:32%;">
+    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/master/screenshots/profile.png" style="width:32%;"> 
 </div>
 
 ### Cart, Chats and Message
 
 <div style="display:flex;">
-    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/screenshots/master/cart.png" style="width:32%;">
-    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/screenshots/master/chats.png" style="width:32%;">
-    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/screenshots/master/message.png" style="width:32%;">
+    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/master/screenshots/cart.png" style="width:32%;">
+    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/master/screenshots/chats.png" style="width:32%;">
+    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/master/screenshots/message.png" style="width:32%;">
 </div>
 
 ### Product and shop
 
 <div style="display:flex;">
-    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/screenshots/master/product.png" style="width:32%;">
-    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/screenshots/master/shop.png" style="width:32%;">
+    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/master/screenshots/product.png" style="width:32%;">
+    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/master/screenshots/shop.png" style="width:32%;">
 </div>
 
 ### Profile
 
 <div style="display:flex;">
-    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/screenshots/master/login.png" style="width:32%;">
-    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/screenshots/master/sign_up.png" style="width:32%;">
+    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/master/screenshots/login.png" style="width:32%;">
+    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/master/screenshots/sign_up.png" style="width:32%;">
 </div>
 <div style="display:flex;">
-    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/screenshots/master/my_account.png" style="width:32%;">
-    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/screenshots/master/change_password.png" style="width:32%;">
+    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/master/screenshots/my_account.png" style="width:32%;">
+    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/master/screenshots/change_password.png" style="width:32%;">
 </div>
 <div style="display:flex;">
-    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/screenshots/master/my_shop.png" style="width:32%;">
-    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/screenshots/master/add_or_edit_product.png" style="width:32%;">
-    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/screenshots/master/my_shop_purchase.png" style="width:32%;">
+    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/master/screenshots/my_shop.png" style="width:32%;">
+    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/master/screenshots/add_or_edit_product.png" style="width:32%;">
+    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/master/screenshots/my_shop_purchase.png" style="width:32%;">
 </div>
 <div style="display:flex;">
-    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/screenshots/master/my_purchase.png" style="width:32%;">
-    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/screenshots/master/my_likes.png" style="width:32%;">
+    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/master/screenshots/my_purchase.png" style="width:32%;">
+    <img src="https://raw.githubusercontent.com/SanRyoo/Shopping/master/screenshots/my_likes.png" style="width:32%;">
 </div>
